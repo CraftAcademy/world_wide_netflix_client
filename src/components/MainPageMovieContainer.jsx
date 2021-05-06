@@ -9,8 +9,8 @@ const MainPageMovieContainer = () => {
 	const [errorMessage, setErrorMessage] = useState();
 	const fetchMovieData = async () => {
 		try {
-			const response = await axios.get('/movies');
-			setTopTenMovies(response.data.results);
+			const response = await axios.get('/movies/');
+			setTopTenMovies(response.data.body);
 		} catch (error) {
 			if (error.response.status === 500) {
 				setErrorMessage(
