@@ -8,10 +8,10 @@ import axios from 'axios';
 axios.defaults.baseURL = 'https://worldwidenetflix.herokuapp.com/api';
 
 ReactDOM.render(
-	<React.StrictMode>
-		<App />
-	</React.StrictMode>,
-	document.getElementById('root')
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.getElementById('root')
 );
 
 reportWebVitals();
