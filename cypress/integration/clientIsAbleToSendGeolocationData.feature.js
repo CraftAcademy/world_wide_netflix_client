@@ -1,6 +1,6 @@
-describe('Visitor can see top 10 movies', () => {
-  describe('successfully', () => {
-    before(() => {
+describe('client can send users geolocation to API', () => {
+  describe('Successfully', () => {
+    beforeEach(() => {
       cy.intercept(
         'GET',
         'https://worldwidenetflix.herokuapp.com/api/movies/?lat=55.7842&lon=12.4518',
@@ -9,8 +9,7 @@ describe('Visitor can see top 10 movies', () => {
         }
       );
     });
-
-    it('is expected to show a list of top 10 global movies', () => {
+    it('loads fake data', () => {
       cy.visit('/', {
         onBeforeLoad(window) {
           const stubLocation = {
@@ -26,7 +25,7 @@ describe('Visitor can see top 10 movies', () => {
           );
         },
       });
-      cy.get('[data-cy=movie-container]').find('img').should('have.length', 10);
+      cy.get('[data-cy=error-message]').should('not.exist');
       cy.get('[data-cy=movie-container]').within(() => {
         cy.get('[data-cy=movie-0]').within(() => {
           cy.get('[data-cy=title-header]').should(
@@ -38,25 +37,23 @@ describe('Visitor can see top 10 movies', () => {
     });
   });
 
-  describe('unsuccessfully', () => {
-    before(() => {
+  describe('Unsuccessfully', () => {
+    beforeEach(() => {
       cy.intercept(
         'GET',
-        'https://worldwidenetflix.herokuapp.com/api/movies/?lat=55.7842&lon=12.4518',
+        'https://worldwidenetflix.herokuapp.com/api/movies/',
         {
-          statusCode: 500,
-          error: '500 Internal Server Error |  0     bytes\n',
+          fixture: 'globalTop10Movies.json',
         }
       );
     });
-
-    it('is expected to give http error 500', () => {
+    it('loads fake data', () => {
       cy.visit('/', {
         onBeforeLoad(window) {
           const stubLocation = {
             coords: {
-              latitude: 55.7842,
-              longitude: 12.4518,
+              latitude: null,
+              longitude: null,
             },
           };
           cy.stub(window.navigator.geolocation, 'getCurrentPosition').callsFake(
@@ -68,8 +65,16 @@ describe('Visitor can see top 10 movies', () => {
       });
       cy.get('[data-cy=error-message]').should(
         'contain',
-        'Please try again later, our servers are currently not responding'
+        "Allow your location to show movies that's not from your country"
       );
+      cy.get('[data-cy=movie-container]').within(() => {
+        cy.get('[data-cy=movie-0]').within(() => {
+          cy.get('[data-cy=title-header]').should(
+            'contain',
+            'The Intouchables'
+          );
+        });
+      });
     });
   });
 });
