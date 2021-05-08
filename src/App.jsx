@@ -1,12 +1,16 @@
 import React from 'react';
+import Footer from './components/Footer';
+import HeaderMainPage from './components/Header';
 import MainPageMovieContainer from './components/MainPageMovieContainer';
 
-const App = () => {
-	return (
-		<div>
-			<MainPageMovieContainer />
-		</div>
-	);
-};
+function App() {
+  return (
+    <>
+      <HeaderMainPage />
+      <MainPageMovieContainer />
+      <Footer />
+    </>
+  );
+}
 
 export default App;
