@@ -1,15 +1,19 @@
-describe('client can send users geolocation to API', () => {
-  describe('Successfully', () => {
-    beforeEach(() => {
+describe('Visitor can see top 100 movies', () => {
+  describe('successfully', () => {
+    before(() => {
       cy.intercept(
         'GET',
         'https://worldwidenetflix.herokuapp.com/api/movies/?lat=55.7842&lon=12.4518',
         {
-          fixture: 'top10Movies.json',
+          fixture: 'top100Movies.json',
         }
       );
+      cy.intercept('POST', 'https://worldwidenetflix.herokuapp.com/api/auth', {
+        fixture: 'user_registration.json',
+      });
     });
-    it('loads fake data', () => {
+
+    it('is expected to show a list of top 100 global movies', () => {
       cy.visit('/', {
         onBeforeLoad(window) {
           const stubLocation = {
@@ -25,7 +29,9 @@ describe('client can send users geolocation to API', () => {
           );
         },
       });
-      cy.get('[data-cy=error-message]').should('not.exist');
+      cy.get('[data-cy=movie-container]')
+        .find('img')
+        .should('have.length', 100);
       cy.get('[data-cy=movie-container]').within(() => {
         cy.get('[data-cy=movie-0]').within(() => {
           cy.get('[data-cy=title-header]').should(
@@ -37,45 +43,38 @@ describe('client can send users geolocation to API', () => {
     });
   });
 
-  describe('Unsuccessfully', () => {
-    beforeEach(() => {
+  describe('unsuccessfully', () => {
+    before(() => {
       cy.intercept(
         'GET',
-        'https://worldwidenetflix.herokuapp.com/api/movies/',
+        'https://worldwidenetflix.herokuapp.com/api/movies/?lat=55.7842&lon=12.4518',
         {
-          fixture: 'globalTop10Movies.json',
+          statusCode: 500,
+          error: '500 Internal Server Error |  0     bytes\n',
         }
       );
     });
 
-    it('loads fake data', () => {
+    it('is expected to give http error 500', () => {
       cy.visit('/', {
         onBeforeLoad(window) {
           const stubLocation = {
             coords: {
-              latitude: null,
-              longitude: null,
+              latitude: 55.7842,
+              longitude: 12.4518,
             },
           };
           cy.stub(window.navigator.geolocation, 'getCurrentPosition').callsFake(
-            () => {
-              throw new Error('User denied Geolocation');
+            (callback) => {
+              return callback(stubLocation);
             }
           );
         },
       });
       cy.get('[data-cy=error-message]').should(
         'contain',
-        "Allow your location to show movies that's not from your country"
+        'Please try again later, our servers are currently not responding'
       );
-      cy.get('[data-cy=movie-container]').within(() => {
-        cy.get('[data-cy=movie-0]').within(() => {
-          cy.get('[data-cy=title-header]').should(
-            'contain',
-            'The Intouchables'
-          );
-        });
-      });
     });
   });
 });

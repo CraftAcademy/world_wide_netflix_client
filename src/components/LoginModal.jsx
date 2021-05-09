@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import {
   Modal,
   Button,
@@ -10,8 +11,59 @@ import {
   Menu,
 } from 'semantic-ui-react';
 
-const LoginModal = () => {
+const LoginModal = ({setUpdate}) => {
   const [visibility, setVisibility] = useState(false);
+
+  const registerUser = async (event) => {
+    event.preventDefault();
+    let credentials = {
+      email: event.target.email.value,
+      password: event.target.password.value,
+      password_confirmation: event.target.passwordConfirmation.value,
+    };
+
+    try {
+      let response = await axios.post('/auth/', credentials);
+      const userCredentials = {
+        uid: response.headers['uid'],
+        client: response.headers['client'],
+        access_token: response.headers['access-token'],
+        expiry: response.headers['expiry'],
+        token_type: "Bearer"
+      }
+      localStorage.setItem('userData', JSON.stringify(userCredentials))
+      setUpdate(true)
+      setVisibility(false)
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
+  const logInUser = async (event) => {
+    event.preventDefault();
+    let credentials = {
+      email: event.target.email.value,
+      password: event.target.password.value,
+    };
+
+    try {
+      let response = await axios.get('/auth/validate_token/', credentials);
+      const userCredentials = {
+        uid: response.headers['uid'],
+        client: response.headers['client'],
+        access_token: response.headers['access-token'],
+        expiry: response.headers['expiry'],
+        token_type: "Bearer"
+      }
+      localStorage.setItem('userData', JSON.stringify(userCredentials))
+      setUpdate(true)
+      setVisibility(false)
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <Menu inverted>
       <Modal
@@ -25,7 +77,8 @@ const LoginModal = () => {
               Login/Register
             </Button>
           </Menu.Item>
-        }>
+        }
+      >
         <Modal.Header data-cy='login-modal-header'></Modal.Header>
         <Modal.Content data-cy='login-modal-content'>
           <Segment placeholder>
@@ -34,12 +87,13 @@ const LoginModal = () => {
               <Grid.Row verticalAlign='middle'>
                 <Grid.Column>
                   <Header as='h3'>Login</Header>
-                  <Form>
+                  <Form onSubmit={(event) => logInUser(event)}>
                     <Form.Field widths={2}>
                       <Form.Input
                         fluid
                         type='email'
                         label='email'
+                        name='email'
                         placeholder='email'
                         data-cy='login-email-input'
                         required
@@ -48,6 +102,7 @@ const LoginModal = () => {
                         fluid
                         type='password'
                         label='Password'
+                        name='password'
                         placeholder='Password'
                         data-cy='login-password'
                         required
@@ -56,19 +111,20 @@ const LoginModal = () => {
                     <Button
                       type='submit'
                       data-cy='form-login-btn'
-                      onClick={() => setVisibility(false)}>
+                    >
                       Login
                     </Button>
                   </Form>
                 </Grid.Column>
                 <Grid.Column>
                   <Header>Register</Header>
-                  <Form>
+                  <Form onSubmit={(event) => registerUser(event)}>
                     <Form.Field widths='equal'>
                       <Form.Input
                         fluid
                         type='email'
                         label='email'
+                        name='email'
                         placeholder='email'
                         data-cy='registration-email-input'
                         required
@@ -77,6 +133,7 @@ const LoginModal = () => {
                         fluid
                         type='password'
                         label='Password'
+                        name='password'
                         placeholder='Password'
                         data-cy='registration-password'
                         required
@@ -85,6 +142,7 @@ const LoginModal = () => {
                         fluid
                         type='password'
                         label='Password'
+                        name='passwordConfirmation'
                         placeholder='Confirm Password'
                         data-cy='registration-confirmation-password'
                         required
@@ -93,7 +151,7 @@ const LoginModal = () => {
                     <Button
                       type='submit'
                       data-cy='form-register-btn'
-                      onClick={() => setVisibility(false)}>
+                    >
                       Register
                     </Button>
                   </Form>
