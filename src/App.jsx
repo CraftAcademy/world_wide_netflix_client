@@ -1,13 +1,15 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Footer from './components/Footer';
 import HeaderMainPage from './components/Header';
 import MainPageMovieContainer from './components/MainPageMovieContainer';
 
+
 function App() {
+  const [update, setUpdate] = useState(false)
   return (
     <>
-      <HeaderMainPage />
-      <MainPageMovieContainer />
+      <HeaderMainPage setUpdate={setUpdate} />
+      <MainPageMovieContainer update={update} />
       <Footer />
     </>
   );

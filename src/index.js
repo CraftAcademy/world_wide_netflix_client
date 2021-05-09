@@ -9,9 +9,7 @@ import './index.css'
 axios.defaults.baseURL = 'https://worldwidenetflix.herokuapp.com/api';
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+    <App />,
   document.getElementById('root')
 );
 

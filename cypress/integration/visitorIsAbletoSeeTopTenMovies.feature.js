@@ -5,7 +5,7 @@ describe('Visitor can see top 10 movies', () => {
         'GET',
         'https://worldwidenetflix.herokuapp.com/api/movies/?lat=55.7842&lon=12.4518',
         {
-          fixture: 'top10movies.json',
+          fixture: 'top10Movies.json',
         }
       );
     });
