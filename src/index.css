@@ -5,3 +5,12 @@
   width: 100%;
   text-align: center;
 }
+
+body {
+background-color: rgb(19, 18, 17);
+}
+
+#error-message {
+  color: white;
+  text-align: center;
+}

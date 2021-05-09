@@ -52,7 +52,7 @@ const MainPageMovieContainer = ({ update }) => {
 
   return (
     <Container>
-      {errorMessage && <h1 data-cy='error-message'>{errorMessage}</h1>}
+      {errorMessage && <h1 id='error-message' data-cy='error-message'>{errorMessage}</h1>}
       <Card.Group data-cy='movie-container' itemsPerRow={5} centered>
         {movieList}
       </Card.Group>
