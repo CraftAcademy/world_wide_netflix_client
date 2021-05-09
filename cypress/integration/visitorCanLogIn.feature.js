@@ -16,7 +16,7 @@ describe('Visitor can see top 100 movies', () => {
         }
       );
 
-      cy.intercept('GET', 'https://worldwidenetflix.herokuapp.com/api/auth/validate_token/', {
+      cy.intercept('POST', 'https://worldwidenetflix.herokuapp.com/api/auth/sign_in/', {
         fixture: 'sign_in.json',
       });
     })

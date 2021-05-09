@@ -48,7 +48,7 @@ const LoginModal = ({setUpdate}) => {
     };
 
     try {
-      let response = await axios.get('/auth/validate_token/', credentials);
+      let response = await axios.post("/auth/sign_in", credentials)
       const userCredentials = {
         uid: response.headers['uid'],
         client: response.headers['client'],
