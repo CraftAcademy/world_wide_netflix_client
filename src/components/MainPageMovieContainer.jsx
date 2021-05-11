@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Container } from 'semantic-ui-react';
+import { Card, Container, Header } from 'semantic-ui-react';
 import axios from 'axios';
 import MovieCard from '../components/MovieCard';
 
-const MainPageMovieContainer = ({ update }) => {
+const MainPageMovieContainer = (props) => {
   const [topTenMovies, setTopTenMovies] = useState([]);
   const [errorMessage, setErrorMessage] = useState();
 
@@ -14,18 +14,37 @@ const MainPageMovieContainer = ({ update }) => {
   };
 
   useEffect(() => {
-    const fetchMovieData = async () => {
+    const fetchMovieData = async (query) => {
       try {
-        const pos = await getPosition();
-        const { latitude, longitude } = pos.coords;
-        if (latitude && longitude) {
+        if (query) {
           let headers = JSON.parse(localStorage.getItem('userData'));
-          const response = await axios.get(
-            `/movies/?lat=${latitude}&lon=${longitude}`,
-            { headers: headers }
-          );
+
+          let credentials = {
+            'access-token': headers.access_token,
+            'token-type': headers.token_type,
+            'client': headers.client,
+            'expiry': headers.expiry,
+            'uid': headers.uid,
+          };
+          await axios.get('/auth/validate_token', {headers: credentials});
+
+          const response = await axios.get(`/movies/?query=${query}`, {
+            headers: credentials,
+          });
           setTopTenMovies(response.data.body);
           setErrorMessage('');
+        } else {
+          const pos = await getPosition();
+          const { latitude, longitude } = pos.coords;
+          if (latitude && longitude) {
+            let headers = JSON.parse(localStorage.getItem('userData'));
+            const response = await axios.get(
+              `/movies/?lat=${latitude}&lon=${longitude}`,
+              { headers: headers }
+            );
+            setTopTenMovies(response.data.body);
+            setErrorMessage('');
+          }
         }
       } catch (error) {
         if (error.message === 'User denied Geolocation') {
@@ -34,7 +53,7 @@ const MainPageMovieContainer = ({ update }) => {
           setErrorMessage(
             "Allow your location to show movies that's not from your country"
           );
-        } else if (error.response.status === 500) {
+        } else if (error.status === 500) {
           setErrorMessage(
             'Please try again later, our servers are currently not responding'
           );
@@ -43,8 +62,9 @@ const MainPageMovieContainer = ({ update }) => {
         }
       }
     };
-    fetchMovieData();
-  }, [update]);
+
+    fetchMovieData(props.query);
+  }, [props.update, props.query, props.message]);
 
   let movieList = topTenMovies.map((movie, i) => {
     return <MovieCard data-cy='movie-card' movie={movie} i={i} />;
@@ -52,7 +72,8 @@ const MainPageMovieContainer = ({ update }) => {
 
   return (
     <Container>
-      {errorMessage && <h1 id='error-message' data-cy='error-message'>{errorMessage}</h1>}
+      {errorMessage && <Header data-cy='error-message' color='red' >{errorMessage}</Header>}
+      {props.message && <Header data-cy='success-message' color='red' >{props.message}</Header>}
       <Card.Group data-cy='movie-container' itemsPerRow={5} centered>
         {movieList}
       </Card.Group>

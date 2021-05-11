@@ -1,7 +1,7 @@
 import React from 'react';
 import he from 'he';
 import _ from 'lodash';
-import { Button, Card, Flag, Image } from 'semantic-ui-react';
+import { Segment, Card, Flag, Image } from 'semantic-ui-react';
 
 const MovieCard = ({ movie, i }) => {
   let countryArray = Object.keys(JSON.parse('{' + movie.clist + '}'));
@@ -10,8 +10,8 @@ const MovieCard = ({ movie, i }) => {
     countryArray.pop();
   }
 
-  let countryList = countryArray.map((country) => {
-    return <Flag name={_.toLower(country)} />;
+  let countryList = countryArray.map((country, i) => {
+    return <Flag key={i} name={_.toLower(country)} />;
   });
 
   return (
@@ -26,13 +26,9 @@ const MovieCard = ({ movie, i }) => {
           <p data-cy='flag-list'>Availible in: {countryList}</p>
         </Card.Description>
       </Card.Content>
-          <Button
-            data-cy='netflix-link'
-            color='red'
-            attached='bottom'
-            href={`https://netflix.com/title/${movie.nfid}`}>
-            Watch Now
-          </Button>
+      <Segment textAlign='center' inverted data-cy='netflix-link' color='red' attached='bottom'>
+        {`/title/${movie.nfid}`}
+      </Segment>
     </Card>
   );
 };

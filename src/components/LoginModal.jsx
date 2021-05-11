@@ -11,7 +11,7 @@ import {
   Menu,
 } from 'semantic-ui-react';
 
-const LoginModal = ({setUpdate}) => {
+const LoginModal = (props) => {
   const [visibility, setVisibility] = useState(false);
 
   const registerUser = async (event) => {
@@ -29,16 +29,16 @@ const LoginModal = ({setUpdate}) => {
         client: response.headers['client'],
         access_token: response.headers['access-token'],
         expiry: response.headers['expiry'],
-        token_type: "Bearer"
-      }
-      localStorage.setItem('userData', JSON.stringify(userCredentials))
-      setUpdate(true)
-      setVisibility(false)
+        token_type: 'Bearer',
+      };
+      localStorage.setItem('userData', JSON.stringify(userCredentials));
+      props.setUpdate(true);
+      setVisibility(false);
+			props.setAuthenticated(true)
     } catch (error) {
       console.log(error);
     }
-  }
-
+  };
 
   const logInUser = async (event) => {
     event.preventDefault();
@@ -48,37 +48,39 @@ const LoginModal = ({setUpdate}) => {
     };
 
     try {
-      let response = await axios.post("/auth/sign_in", credentials)
+      let response = await axios.post('/auth/sign_in', credentials);
       const userCredentials = {
         uid: response.headers['uid'],
         client: response.headers['client'],
         access_token: response.headers['access-token'],
         expiry: response.headers['expiry'],
-        token_type: "Bearer"
-      }
-      localStorage.setItem('userData', JSON.stringify(userCredentials))
-      setUpdate(true)
-      setVisibility(false)
+        token_type: 'Bearer',
+      };
+      localStorage.setItem('userData', JSON.stringify(userCredentials));
+      props.setUpdate(true);
+      setVisibility(false);
+			props.setAuthenticated(true)
     } catch (error) {
       console.log(error);
     }
   };
 
+  
+
   return (
-    <Menu inverted>
+    <Menu inverted>      
       <Modal
         centered={false}
         open={visibility}
         onClose={() => setVisibility(false)}
         onOpen={() => setVisibility(true)}
         trigger={
-          <Menu.Item position='right'>
+          <Menu.Item position='left'>
             <Button data-cy='login-btn' color='red' inverted>
               Login/Register
             </Button>
           </Menu.Item>
-        }
-      >
+        }>
         <Modal.Header data-cy='login-modal-header'></Modal.Header>
         <Modal.Content data-cy='login-modal-content'>
           <Segment placeholder>
@@ -108,10 +110,7 @@ const LoginModal = ({setUpdate}) => {
                         required
                       />
                     </Form.Field>
-                    <Button
-                      type='submit'
-                      data-cy='form-login-btn'
-                    >
+                    <Button type='submit' data-cy='form-login-btn'>
                       Login
                     </Button>
                   </Form>
@@ -148,10 +147,7 @@ const LoginModal = ({setUpdate}) => {
                         required
                       />
                     </Form.Field>
-                    <Button
-                      type='submit'
-                      data-cy='form-register-btn'
-                    >
+                    <Button type='submit' data-cy='form-register-btn'>
                       Register
                     </Button>
                   </Form>
